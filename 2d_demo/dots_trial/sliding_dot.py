@@ -1,9 +1,11 @@
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
+import numpy as np
 
-# Initialize the grid and the dot's position
+# Initialize the grid, the dot's position, and resolution (how many steps per step)
 grid_size = 5
 dot_position = [0, 0]  # Starting at the top left corner
+res = 20
 
 # Define the instructions
 instructions = [('', 0)] + [('right', 1)] * 3 + [('up', 2)] * 2 + [('left', 1)] + [('down', 1)] * 2
@@ -39,22 +41,26 @@ def init():
     dot.set_data([dot_position[0]], [dot_position[1]])
     return dot,
 
+# Generate a list of all positions for the animation
+all_positions = [dot_position]
+for instruction in instructions:
+    direction, steps = instruction
+    for _ in range(res):
+        dot_position = move_dot(dot_position, direction, steps / res)
+        all_positions.append(dot_position.copy())
+
 # Update function for the animation
 def update(num):
-    direction, steps = instructions[num]
     global dot_position
-    dot_position = move_dot(dot_position, direction, steps)
+    dot_position = all_positions[num]
     dot.set_data([dot_position[0]], [dot_position[1]])
     return dot,
 
 # Create the animation
-ani = FuncAnimation(fig, update, init_func=init, frames=len(instructions), interval=1000, blit=True)
+ani = FuncAnimation(fig, update, init_func=init, frames=len(all_positions), interval=1000/res, blit=True)
 
 # Save the animation as a video file
-ani.save('2d_demo/dots_trial/moving_dot.gif')
+ani.save('2d_demo/dots_trial/sliding_dot.gif')
 
 # Display the animation
 plt.show()
-# Uncomment the following two lines and comment the above line if using Jupyter to run code
-# from IPython.display import HTML
-# HTML(ani.to_jshtml())

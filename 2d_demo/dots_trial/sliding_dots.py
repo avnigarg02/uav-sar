@@ -1,16 +1,16 @@
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 
-# Initialize the grid and the dots' positions
+# Initialize the grid, the dots' position, and resolution (how many steps per step)
 grid_size = 5
 dot_positions = [[0, 0], [4, 2]]  # Starting positions for two dots
+res = 20
 
 # Define the instructions
 instructions = [
     [('', 0)] + [('right', 1)] * 3 + [('up', 2)] * 2 + [('left', 1)] + [('down', 1)] * 2,
     [('', 0)] + [('left', 1)] * 3 + [('down', 1)] * 2 + [('right', 1)] + [('up', 2)] * 2
 ]
-steps = len(instructions[0])
 
 # Function to move the dot
 def move_dot(dot_position, direction, steps):
@@ -44,20 +44,29 @@ def init():
         dot.set_data([dot_position[0]], [dot_position[1]])
     return dots
 
+# Generate a list of all positions for the animation for each dot
+all_positions = []
+for i in range(len(dot_positions)):
+    positions = [dot_positions[i]]
+    for instruction in instructions[i]:
+        direction, steps = instruction
+        for _ in range(res):
+            dot_positions[i] = move_dot(dot_positions[i], direction, steps/res)
+            positions.append(dot_positions[i].copy())
+    all_positions.append(positions)
+
 # Update function for the animation
 def update(num):
-    global dot_positions
     for i in range(len(dot_positions)):
-        direction, steps = instructions[i][num]
-        dot_positions[i] = move_dot(dot_positions[i], direction, steps)
+        dot_positions[i] = all_positions[i][num]
         dots[i].set_data([dot_positions[i][0]], [dot_positions[i][1]])
     return dots
 
 # Create the animation
-ani = FuncAnimation(fig, update, init_func=init, frames=steps, interval=1000, blit=True)
+ani = FuncAnimation(fig, update, init_func=init, frames=len(all_positions[0]), interval=1000/res, blit=True)
 
 # Save the animation as a video file
-ani.save('2d_demo/dots_trial/moving_dots.gif')
+ani.save('2d_demo/dots_trial/sliding_dots.gif')
 
 # Display the animation
 plt.show()
