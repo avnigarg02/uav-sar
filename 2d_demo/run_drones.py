@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 import os
 
-from probability_map import gradient_map, get_targets
+from probability_map import randgrad_map, get_targets
 from algorithms import basic_algo
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ INITIALIZATION  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -10,7 +10,7 @@ grid_size = 99
 drones_init = [([10, 10], 'r'), ([90, 90], 'r')]
 res = 1  # how smooth should animation be (higher = smoother)
 speed = 25  # milliseconds per unit traveled
-probabilities = gradient_map(grid_size)
+probabilities = randgrad_map(grid_size)
 target_positions = get_targets(probabilities, 10)
 
 

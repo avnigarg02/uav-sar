@@ -1,7 +1,22 @@
 import numpy as np
 
-def make_map(grid_size):
 
+def random_map(grid_size):
+    return np.random.rand(grid_size, grid_size)
+
+
+def gradient_map(grid_size):
+    # Generate random values from 0 to 1
+    map_array = np.empty((grid_size, grid_size))
+    
+    # Assign higher values to higher rows
+    for i in range(grid_size):
+        map_array[i] = (i) / grid_size
+    
+    return map_array
+
+
+def randgrad_map(grid_size):
     # Generate random values from 0 to 1
     map_array = np.random.rand(grid_size, grid_size)
     
