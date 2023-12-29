@@ -2,14 +2,15 @@ import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 import os
 
-from probability_map import make_map, get_targets
+from probability_map import gradient_map, get_targets
 from algorithms import basic_algo
 
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ INITIALIZATION  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 grid_size = 99
 drones_init = [([10, 10], 'r'), ([90, 90], 'r')]
-res = 20  # how smooth should animation be
-probabilities = make_map(grid_size)
+res = 1  # how smooth should animation be (higher = smoother)
+speed = 25  # milliseconds per unit traveled
+probabilities = gradient_map(grid_size)
 target_positions = get_targets(probabilities, 10)
 
 
@@ -53,8 +54,8 @@ for i in range(len(drone_positions)):
     positions = [drone_positions[i]]
     for instruction in instructions[i]:
         direction, steps = instruction
-        for _ in range(res):
-            drone_positions[i] = move_drone(drone_positions[i], direction, steps/res)
+        for _ in range(steps*res):
+            drone_positions[i] = move_drone(drone_positions[i], direction, 1/res)
             positions.append(drone_positions[i].copy())
     all_positions.append(positions)
 
@@ -76,7 +77,7 @@ def update(num):
 
 
 # Create the animation
-ani = FuncAnimation(fig, update, init_func=init, frames=len(all_positions[0]), interval=1000/res, blit=True)
+ani = FuncAnimation(fig, update, init_func=init, frames=len(all_positions[0]), interval=speed/res, blit=True)
 
 # Save the animation
 directory = os.path.dirname(os.path.abspath(__file__))
