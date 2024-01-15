@@ -46,7 +46,7 @@ def my20x20path(start, res):
         'rrrurrurrurrrurrrurrrrurrdldlllldllldllldrdlluldllrrrrrrurrurrrurrrruddllldllldlllrrrrrrrrrull                 ',
         'dluldluldluurulldluldllurulluulrrdrurddrrrrrddrrrulluulllllurrrrrrrddlu                                        ',
         'llldlllldllluuuuuuulddddddddrlluuuuuuuuurrrdddddddrurrrrurrrruuuulllllluulllrddddddrrrurrrruulllllluuddddrurrrr',
-        'dddrrurddruurdddldrruuurddrrluululullllldddrdrddrrrdddddddddlldlldllururrurruuuuuuullluu                       ',
+        'dddrrurddruurdddldrruuurddrrluululullllldddrdrddrrrdddddddddlldlldllururrurruuuuuuullluululuuuuurrrrrrdr       ',
 
     ]
 

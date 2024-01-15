@@ -1,7 +1,6 @@
 import matplotlib.pyplot as plt
 from matplotlib.animation import FuncAnimation
 from matplotlib.lines import Line2D
-# from matplotlib.ticker import MaxNLocator
 import numpy as np
 import os
 
@@ -18,6 +17,7 @@ delay = 50  # how long to wait until animation restarts
 probabilities = my20x20map()
 target_positions = get_targets(probabilities, 10, seed=0)
 directory = os.path.dirname(os.path.abspath(__file__)) + '/visuals' # location to save to
+save = True
 
 # Note: color options can be found: https://matplotlib.org/stable/gallery/color/named_colors.html
 
@@ -43,28 +43,22 @@ fig, ax = plt.subplots()
 # Note: change color scheme using cmap: https://matplotlib.org/stable/users/explain/colors/colormaps.html
 ax.imshow(probabilities, cmap='YlGn', interpolation='nearest')
 
-# Set the limits and aspect ratio of the plot
+# Set the limits, aspect ratio, and grid lines of the plot
 ax.set_xlim(-0.5, grid_size + 0.5)
 ax.set_ylim(-0.5, grid_size + 0.5)
 ax.set_aspect('equal')
-# ax.xaxis.set_major_locator(MaxNLocator(integer=True))
-# ax.yaxis.set_major_locator(MaxNLocator(integer=True))
-# ax.set_xticks([])
-# ax.set_yticks([])
 ax.set_xticks(np.arange(-0.5, grid_size, 1))
 ax.set_yticks(np.arange(-0.5, grid_size, 1))
 ax.xaxis.set_tick_params(labelsize=0)
 ax.yaxis.set_tick_params(labelsize=0)
-
-# Add grid lines
 ax.grid(True, which='both', color='dimgray', linewidth=1)
 
 # Save the blank probability map
-plt.savefig(os.path.join(directory, 'prob_map_no_targets.png'))
+if save: plt.savefig(os.path.join(directory, 'prob_map_no_targets.png'))
 
 # Create targets and save
 targets = [ax.plot(*target_pos, 'o', color='dodgerblue')[0] for target_pos in target_positions]
-plt.savefig(os.path.join(directory, 'prob_map_with_targets.png'))
+if save: plt.savefig(os.path.join(directory, 'prob_map_with_targets.png'))
 
 # Add the drones
 start_locations = [ax.plot(*drone_pos, '*', color=c, markersize=10)[0] for drone_pos, c in drones_init]
@@ -90,15 +84,17 @@ for drone_path in drone_paths:
 
 # Update function for the animation
 def update(num):
+    global target_positions
+
     if num < len(all_positions[0]):
         for i in range(len(drone_positions)):
             drone_positions[i] = all_positions[i][num]
             drones[i].set_data([drone_positions[i][0]], [drone_positions[i][1]])
 
             # Check if the drone's current position matches any of the target positions
-            # drone_pos_array = np.array(drone_positions[i])
-            if np.any(np.all(np.array(drone_positions[i]) == target_positions, axis=1)):
-                target_hit_times.append(num // 2 + 1)
+            matches = np.where(np.all(np.array(drone_positions[i]) == target_positions, axis=1))[0]
+            target_hit_times.extend([num // res + 1] * matches.size)
+            target_positions = np.delete(target_positions, matches, axis=0)
 
             # Update the drone path
             drone_paths[i].set_data(*zip(*all_positions[i][:num+1]))
@@ -110,8 +106,11 @@ def update(num):
 ani = FuncAnimation(fig, update, init_func=init, frames=len(all_positions[0]) + delay, interval=speed/res, blit=True)
 
 # Save the animation
-ani.save(os.path.join(directory, save_to + '.gif'))
-plt.savefig(os.path.join(directory, save_to + '.png'))
+if save: 
+    ani.save(os.path.join(directory, save_to + '.gif'))
+    plt.savefig(os.path.join(directory, save_to + '.png'))
+else:
+    ani.save(os.path.join(directory, 'temp.gif'))
 
 # Print target hit times
 print(target_hit_times)
